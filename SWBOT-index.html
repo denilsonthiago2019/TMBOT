@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWBOT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100d1b;color:#fff;font-family:Arial,sans-serif}
+header{background:#211637;padding:22px;text-align:center;border-bottom:2px solid #9255df}
+header h1{margin:0;color:#c69aff;font-size:30px}
+header p{margin:6px 0 0;color:#c5b8d8}
+main{padding:16px;padding-bottom:85px}
+.card{background:#211b30;border:1px solid #493663;border-radius:13px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;color:#c69aff;margin:0 0 12px}
+button{background:#854bd0;color:white;border:0;border-radius:9px;padding:12px;font-weight:bold;margin:4px;cursor:pointer}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #604781;background:#120e20;color:white;margin:7px 0}
+nav{position:fixed;bottom:0;left:0;right:0;background:#211637;display:flex;justify-content:space-around;padding:10px 2px}
+nav button{font-size:12px;padding:10px 7px;margin:0}
+.page{display:none}.page.active{display:block}
+.item{padding:10px;background:#302443;border-radius:8px;margin:7px 0}
+.small{font-size:12px;color:#b9accb}
+</style>
+</head>
+<body>
+<header><h1>SWBOT</h1><p>Painel de acompanhamento</p></header>
+<main>
+<section id="inicio" class="page active">
+<div class="card"><h2>Bem-vindo ao SWBOT</h2><p>Painel pessoal para organizar suas rotas e anotações.</p><p class="small">Versão 1.0 • Interface Android</p></div>
+<div class="card"><h2>Status</h2><p>Aplicativo: <b style="color:#75e6a0">Iniciado</b></p><p>Conexão com o jogo: <b>Não conectada</b></p><p class="small">Esta versão ainda não captura a tela nem controla outros aplicativos.</p></div>
+</section>
+<section id="rotas" class="page"><div class="card"><h2>Minhas rotas</h2><input id="rota" placeholder="Nome da rota"><textarea id="nota" placeholder="Anotações da rota"></textarea><button onclick="salvarRota()">Salvar rota</button><div id="listaRotas"></div></div></section>
+<section id="caca" class="page"><div class="card"><h2>Área de caça</h2><p>Organize suas sessões e anotações.</p><textarea id="cacaNota" placeholder="Escreva suas anotações..."></textarea><button onclick="salvarNota()">Salvar anotação</button><p id="avisoCaca" class="small"></p></div></section>
+<section id="config" class="page"><div class="card"><h2>Configurações</h2><label>Nome do personagem</label><input id="personagem" placeholder="Seu personagem"><button onclick="salvarConfig()">Salvar configurações</button><p id="avisoConfig" class="small"></p></div><div class="card"><h2>Sobre</h2><p>SWBOT — Painel pessoal de organização.</p></div></section>
+</main>
+<nav><button onclick="abrir('inicio')">Início</button><button onclick="abrir('rotas')">Rotas</button><button onclick="abrir('caca')">Caça</button><button onclick="abrir('config')">Ajustes</button></nav>
+<script>
+function abrir(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function salvarRota(){let nome=document.getElementById('rota').value.trim();let nota=document.getElementById('nota').value.trim();if(!nome){alert('Digite o nome da rota.');return;}let rotas=JSON.parse(localStorage.getItem('swbot_rotas')||'[]');rotas.push({nome,nota});localStorage.setItem('swbot_rotas',JSON.stringify(rotas));document.getElementById('rota').value='';document.getElementById('nota').value='';mostrarRotas();}
+function mostrarRotas(){let rotas=JSON.parse(localStorage.getItem('swbot_rotas')||'[]');let lista=document.getElementById('listaRotas');lista.innerHTML='';rotas.forEach((r,i)=>{let div=document.createElement('div');div.className='item';let titulo=document.createElement('b');titulo.textContent=r.nome;let texto=document.createElement('p');texto.textContent=r.nota;let excluir=document.createElement('button');excluir.textContent='Excluir';excluir.onclick=()=>{rotas.splice(i,1);localStorage.setItem('swbot_rotas',JSON.stringify(rotas));mostrarRotas();};div.append(titulo,texto,excluir);lista.appendChild(div);});}
+function salvarNota(){localStorage.setItem('swbot_caca',document.getElementById('cacaNota').value);document.getElementById('avisoCaca').textContent='Anotação salva!';}
+function salvarConfig(){localStorage.setItem('swbot_personagem',document.getElementById('personagem').value);document.getElementById('avisoConfig').textContent='Configurações salvas!';}
+document.getElementById('cacaNota').value=localStorage.getItem('swbot_caca')||'';
+document.getElementById('personagem').value=localStorage.getItem('swbot_personagem')||'';
+mostrarRotas();
+</script>
+</body>
+</html>
